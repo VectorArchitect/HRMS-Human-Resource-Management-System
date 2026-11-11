@@ -155,9 +155,11 @@ This repository is an academic development project and should not be deployed wi
 - Keep secrets in environment variables and rotate any credential that was accidentally exposed.
 - Use synthetic records for screenshots and demonstrations.
 
+<!--
 ## Screenshots
 
 Add screenshots of the running application in a `docs/screenshots/` directory and link them here.
+-->
 
 ## License
 
