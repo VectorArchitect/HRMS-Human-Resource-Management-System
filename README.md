@@ -159,8 +159,9 @@ This repository is an academic development project and should not be deployed wi
 ## Screenshots
 
 Add screenshots of the running application in a `docs/screenshots/` directory and link them here.
--->
+
 
 ## License
 
 No license has been applied yet. Unless a license is added, normal copyright restrictions apply. Add an open-source license only if you have the rights and intend to permit reuse.
+-->
