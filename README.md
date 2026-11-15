@@ -1,167 +1,311 @@
-# HRMS – Human Resource Management System
+<!--
+  HRMS — Human Resource Management System
+  Documentation refreshed for clarity. Feature and setup claims are limited
+  to information currently documented in this repository.
+-->
 
-A web-based Human Resource Management System (HRMS) developed as an academic major project. It brings together administrative dashboards and employee attendance workflows, with a Node.js API and MongoDB persistence.
+<div align="center">
 
-> **Project status:** In development. Some screens currently use local demonstration data, while attendance and leave workflows have backend API integration. See [Implementation Notes](#implementation-notes) before treating every screen as database-backed.
+# HRMS — Human Resource Management System
 
-## Features
+**A web-based platform for organizing core human-resource workflows.**
 
-- Admin dashboard and Super Admin interface
-- Employee information interface
-- Attendance punch-in / punch-out and attendance history
-- Leave application and approval workflow
-- Payroll interface
-- Reports and system settings interfaces
-- Separate attendance-facing frontend
+An academic major project exploring administration, attendance, leave management,
+and employee-facing workflows through a multi-frontend application.
+
+<br />
+
+![Project Status](https://img.shields.io/badge/status-in%20development-orange)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Maintained by](https://img.shields.io/badge/maintained%20by-VectorArchitect-6f42c1)
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [What the Project Covers](#what-the-project-covers)
+- [Application Architecture](#application-architecture)
+- [Technology Stack](#technology-stack)
+- [Repository Layout](#repository-layout)
+- [Data Model](#data-model)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Applications](#running-the-applications)
+- [How to Use](#how-to-use)
+- [Development Status and Limitations](#development-status-and-limitations)
+- [Security Notes](#security-notes)
+- [License](#license)
+
+## Overview
+
+The **Human Resource Management System (HRMS)** is designed to bring common
+HR activities into one web-based workspace. The project is organized around
+three parts:
+
+1. **Backend API** — a Node.js and Express service intended to handle application
+   requests and persist data in MongoDB.
+2. **Admin panel** — the main React-based interface for administrative workflows.
+3. **Attendance application** — a separate Next.js interface for attendance-related
+   interactions.
+
+The goal is to provide a clear foundation for managing employee-related
+information and day-to-day HR processes. This is an academic development
+project and is still evolving; not every screen currently represents a
+fully connected, production-ready workflow.
+
+## What the Project Covers
+
+The current project documentation describes the following areas:
+
+| Area | Purpose | Current implementation note |
+|---|---|---|
+| Admin dashboard | Overview of HR activity and dashboard information | Some dashboard content uses demonstration data |
+| Employee information | View and manage employee-related information | Employee entries are currently documented as sample UI data |
+| Attendance | Punch-in, punch-out, and attendance history | Backend API integration is documented |
+| Leave management | Submit and review leave requests | Backend API integration is documented |
+| Payroll | Payroll-related interface | Demonstration UI data; verify integration before relying on it |
+| Reports | HR reporting interface | Verify data integration |
+| Settings | Application settings interface | Verify data integration |
+| Attendance frontend | Separate interface for attendance workflows | Implemented as a Next.js application according to the project documentation |
+
+> **Important:** A visible screen does not necessarily mean its data is stored in
+> MongoDB. The project currently contains a mixture of API-connected workflows
+> and demonstration UI data.
+
+## Application Architecture
+
+The intended high-level flow is:
+
+```mermaid
+flowchart TD
+    Admin[Administrator] --> Panel[React Admin Panel]
+    Employee[Employee] --> Attendance[Next.js Attendance App]
+    Panel --> API[Node.js / Express API]
+    Attendance --> API
+    API --> Models[Mongoose Models]
+    Models --> DB[(MongoDB)]
+```
+
+- The admin panel and attendance frontend communicate with the backend API.
+- The backend uses Mongoose to work with MongoDB.
+- The API is configured to use port `9000` by default.
+- The attendance frontend is documented as using port `3001` by default.
+- The admin frontend uses the development URL printed by Vite.
 
 ## Technology Stack
 
-| Layer | Technologies |
-|---|---|
-| Main admin frontend | React 18, Vite 5, React Router |
-| UI and styling | CSS, Tailwind CSS, Radix UI components, Lucide icons, Recharts |
-| Attendance frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
-| Backend API | Node.js, Express 5 |
-| Database access | MongoDB, Mongoose 9 |
-| Configuration | dotenv, environment variables |
-| Deployment workflow | GitHub Actions workflow (review before enabling) |
+The following stack is described by the project documentation. Check the
+application manifests when they are restored to confirm exact dependency versions.
 
-## Repository Structure
+| Component | Technologies |
+|---|---|
+| Admin frontend | React 18, Vite 5, React Router |
+| UI | CSS, Tailwind CSS, Radix UI, Lucide icons, Recharts |
+| Attendance frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
+| Backend | Node.js, Express 5 |
+| Database | MongoDB, Mongoose 9 |
+| Configuration | dotenv and environment variables |
+
+## Repository Layout
 
 ```text
 HRMS-Human-Resource-Management-System/
-├── backend/                 # Express API and Mongoose models
-├── hrms-admin-panel/        # Main React + Vite admin application
-├── att/                     # Next.js attendance-facing application
-├── .github/workflows/       # CI/deployment workflows
+├── backend/                 # Backend API and database layer
+│   └── .env.example         # Backend configuration template
+├── hrms-admin-panel/        # Main React + Vite admin interface
+│   └── .env.example         # Admin frontend configuration template
+├── att/                     # Next.js attendance interface
+│   └── .env.example         # Attendance frontend configuration template
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
-## Database Overview
+The public `main` branch currently contains the directory configuration
+templates shown above, but **does not currently contain the application source
+files or the `package.json` manifests**. This means a fresh clone of the public
+branch is not yet sufficient to install and launch the applications. See
+[Installation](#installation) before attempting setup.
 
-The backend connects to MongoDB using the `MONGODB_URI` environment variable. Mongoose models are currently defined in `backend/server.js`.
+## Data Model
 
-| Collection / Model | Purpose | Example fields |
+The current documentation describes three Mongoose models:
+
+| Model | Purpose | Documented fields |
 |---|---|---|
-| User | Registered user accounts | name, email, password |
-| Attendance | Daily attendance records | userId, userName, email, workMode, punchInTime, punchOutTime, date, totalDuration |
-| Leave | Employee leave requests | userId, userName, email, leaveType, startDate, endDate, reason, status, appliedDate |
+| User | User account information | `name`, `email`, `password` |
+| Attendance | Daily attendance records | `userId`, `userName`, `email`, `workMode`, `punchInTime`, `punchOutTime`, `date`, `totalDuration` |
+| Leave | Leave requests | `userId`, `userName`, `email`, `leaveType`, `startDate`, `endDate`, `reason`, `status`, `appliedDate` |
 
-The application creates and updates records through API requests. **A MongoDB database export, real employee dataset, or production database is not included in this repository.** Do not commit database dumps, real employee information, credentials, or private HR documents.
+These are model/field descriptions from the existing project documentation,
+not a database export. No employee dataset or production database is included.
 
-## Getting Started
+## Installation
 
 ### Prerequisites
 
-- Node.js (use a version compatible with the installed project dependencies)
-- npm
-- MongoDB locally, or a MongoDB Atlas connection string
+When the application source is available, the documented stack requires:
 
-### 1. Backend API
+- [Node.js](https://nodejs.org/) and npm
+- [MongoDB Community Server](https://www.mongodb.com/try/download/community)
+  running locally, or a MongoDB Atlas database
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/VectorArchitect/HRMS-Human-Resource-Management-System.git
+cd HRMS-Human-Resource-Management-System
+```
+
+### 2. Check that the application files are present
+
+Before installing dependencies, confirm that these files exist:
+
+- `backend/package.json`
+- `hrms-admin-panel/package.json`
+- `att/package.json`
+
+**Current public-repository limitation:** these package manifests and the
+application source files are not present on the `main` branch at the time this
+README was updated. Therefore, `npm install` cannot currently be completed
+from a fresh clone of this branch. The source code must be added to the
+repository first.
+
+Do not create replacement package manifests just to make these commands run;
+they must match the actual application code and dependencies.
+
+## Configuration
+
+Once the corresponding application files have been added, create a local
+`.env` file in each application directory by copying its example.
+
+**Backend — `backend/.env`**
+
+```env
+PORT=9000
+MONGODB_URI=mongodb://127.0.0.1:27017/hrms_db
+```
+
+**Admin panel — `hrms-admin-panel/.env`**
+
+```env
+VITE_BASE_URL=http://localhost:9000
+```
+
+**Attendance app — `att/.env`**
+
+```env
+NEXT_PUBLIC_BASE_URL=http://localhost:9000
+```
+
+These values are templates for local development. Replace the MongoDB URI
+with your own connection string when needed.
+
+> Never commit real `.env` files. Only commit example templates with
+> placeholder values. Do not put database credentials or private secrets in
+> browser-exposed variables such as `VITE_*` or `NEXT_PUBLIC_*`.
+
+## Running the Applications
+
+The existing project notes describe the following development workflow.
+Run these commands **only after the matching source files and package
+manifests have been restored**. The relevant `package.json` must define
+the `dev` script for `npm run dev` to work.
+
+Open a separate terminal for each application.
+
+**Terminal 1 — Backend API**
 
 ```bash
 cd backend
 npm install
-```
-
-Create a local `.env` file using the example:
-
-```bash
-cp .env.example .env
-```
-
-Set `MONGODB_URI` to your own local or Atlas database connection string. Then start the API:
-
-```bash
 npm run dev
 ```
 
-The backend defaults to port `9000`.
+The documented default backend port is `9000`.
 
-### 2. Main Admin Panel
-
-Open a second terminal:
+**Terminal 2 — Admin panel**
 
 ```bash
 cd hrms-admin-panel
 npm install
-```
-
-Create the local environment file:
-
-```bash
-cp .env.example .env
-```
-
-Set `VITE_BASE_URL=http://localhost:9000`, then run:
-
-```bash
 npm run dev
 ```
 
-Vite will print the local development URL in the terminal.
+Open the local Vite URL printed in the terminal.
 
-### 3. Attendance Frontend
-
-If you are using the separate Next.js attendance application:
+**Terminal 3 — Attendance application (optional)**
 
 ```bash
 cd att
 npm install
-```
-
-Create its local environment file:
-
-```bash
-cp .env.example .env
-```
-
-Set `NEXT_PUBLIC_BASE_URL=http://localhost:9000`, then run:
-
-```bash
 npm run dev
 ```
 
-The attendance application is configured to use port `3001`.
+The attendance application is documented as using port `3001`.
 
-## Environment Variables
+## How to Use
 
-Never commit actual `.env` files. Use the committed `.env.example` templates and supply your own local values.
+Once the applications are installed and running:
 
-| File | Variable | Purpose |
-|---|---|---|
-| `backend/.env` | `PORT` | Backend server port |
-| `backend/.env` | `MONGODB_URI` | MongoDB connection string |
-| `hrms-admin-panel/.env` | `VITE_BASE_URL` | Backend API base URL |
-| `att/.env` | `NEXT_PUBLIC_BASE_URL` | Backend API base URL used by the Next.js frontend |
+1. Start MongoDB and confirm that the backend can connect to it.
+2. Start the backend API.
+3. Start the admin panel and open the local URL shown by Vite.
+4. Start the attendance application separately if you want to test its interface.
+5. Use the available dashboard and workflow screens to explore the project.
+6. Treat employee and payroll entries shown as sample/demo content as test data,
+   not as real employee records.
+7. Test attendance and leave operations against the configured backend.
+   Their integration is documented, but each workflow should be verified
+   in the running application.
 
-Only put values safe to expose in browser-side variables such as `VITE_*` and `NEXT_PUBLIC_*`. Never put database credentials or private API secrets in frontend environment variables.
+No default username or password is published in this repository. Do not assume
+there is a built-in demo account.
 
-## Implementation Notes
+## Development Status and Limitations
 
-The codebase contains both API-backed functionality and demonstration UI data. For example, the employee list, payroll records, and Super Admin company list currently include hardcoded sample entries in frontend components. These should be understood as UI demonstration data, not as a live database export.
+This project is under active academic development.
 
-The backend currently defines User, Attendance, and Leave models and exposes registration/login, attendance, leave, and dashboard API routes. The admin frontend calls backend endpoints for some attendance and leave operations. Verify each module's integration before describing it as fully functional.
+- The codebase is documented as containing both API-backed features and
+  demonstration UI data.
+- Employee, payroll, and some dashboard/company entries are described as
+  hardcoded sample data.
+- User, Attendance, and Leave are the models described in the current docs.
+- Attendance and leave API integration is documented; verify behavior locally.
+- The public repository currently lacks the application source and package
+  manifests required for a fresh installation.
 
-### Security and Production Readiness
+As the source is added and modules are completed, this section should be
+updated to distinguish implemented, tested, and planned functionality.
 
-This repository is an academic development project and should not be deployed with real employee data until security work is completed. In particular:
+## Security Notes
 
-- Implement password hashing (Argon2 or bcrypt) and secure authentication/session handling.
-- Add authorization and role-based access checks to protected API routes.
+This project should not be used with real employee information until its
+security controls have been reviewed and strengthened.
+
+Before any real-world deployment:
+
+- Hash passwords using a suitable password-hashing algorithm.
+- Implement secure authentication, session management, and role-based
+  authorization on protected API routes.
 - Restrict CORS to trusted frontend origins.
-- Validate and sanitize request data; avoid returning internal error details to clients.
-- Keep secrets in environment variables and rotate any credential that was accidentally exposed.
-- Use synthetic records for screenshots and demonstrations.
-
-<!--
-## Screenshots
-
-Add screenshots of the running application in a `docs/screenshots/` directory and link them here.
-
+- Validate and sanitize incoming request data.
+- Avoid returning internal stack traces or sensitive error details to clients.
+- Store secrets outside source control and rotate any exposed credentials.
+- Use synthetic employee records in screenshots and demonstrations.
 
 ## License
 
-No license has been applied yet. Unless a license is added, normal copyright restrictions apply. Add an open-source license only if you have the rights and intend to permit reuse.
--->
+This project is distributed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+Made by **[VectorArchitect](https://github.com/VectorArchitect)**
+
+</div>
